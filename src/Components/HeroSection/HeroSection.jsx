@@ -138,7 +138,7 @@ export default function BirthdayHero() {
                                 <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-400 rounded-3xl blur-md opacity-20 group-hover:opacity-40 transition duration-1000"></div>
                                 <div className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl min-h-[80px]">
                                     <Search className="text-blue-500/70 mr-4 shrink-0" size={24} />
-                                    <div className="text-[17px] font-medium text-gray-100 leading-tight">
+                                    <div className="text-[17px] font-medium text-blue-400 italic leading-tight">
                                         {typedText}<span className="w-1.5 h-6 bg-blue-500 inline-block ml-1 animate-[pulse_0.8s_infinite]" />
                                     </div>
                                 </div>
