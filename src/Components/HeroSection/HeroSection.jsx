@@ -127,8 +127,8 @@ export default function BirthdayHero() {
                             >
                                 <ShieldCheck size={12} /> Encrypted Protocol
                             </motion.div>
-                            <h2 className="text-6xl font-black tracking-tighter mb-3">
-                                FLEX<span className="text-blue-500">SHIP</span>
+                            <h2 className="text-6xl font-bold italic tracking-tighter mb-3">
+                                FLEXSHIP<span className="text-blue-500">{" "}IT</span>
                             </h2>
                             <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.5em] opacity-60">Founder Search Engine v2.6</p>
                         </div>
@@ -147,7 +147,7 @@ export default function BirthdayHero() {
                             <button
                                 onClick={triggerSearch}
                                 disabled={searchStarted}
-                                className="w-full relative group overflow-hidden bg-blue-600 py-6 rounded-2xl font-black text-sm transition-all cursor-pointer hover:bg-blue-500 active:scale-[0.97] disabled:opacity-80"
+                                className="w-full relative group overflow-hidden bg-blue-600 py-5 rounded-2xl font-black text-sm transition-all cursor-pointer hover:bg-blue-500 active:scale-[0.97] disabled:opacity-80"
                             >
                                 <span className="relative z-10 flex items-center justify-center gap-3 tracking-[0.2em]">
                                     {searchStarted ? "SCANNING UNIVERSE..." : "EXECUTE ANALYSIS"}
