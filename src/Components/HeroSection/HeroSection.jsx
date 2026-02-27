@@ -102,12 +102,12 @@ export default function BirthdayHero() {
             </div>
 
             {/* Music Control */}
-            <button
+            {/* <button
                 onClick={toggleMusic}
                 className="fixed top-8 right-8 z-50 p-3 bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full hover:scale-110 transition-all active:scale-95 group shadow-xl"
             >
                 {isPlaying ? <Volume2 size={18} className="text-blue-400 group-hover:animate-pulse" /> : <VolumeX size={18} className="text-gray-400" />}
-            </button>
+            </button> */}
 
             <audio ref={audioRef} src="/my_song.mp3" loop />
 
@@ -229,7 +229,7 @@ export default function BirthdayHero() {
                                 </h3>
 
                                 <p className="text-gray-300 text-xl md:text-2xl leading-relaxed font-medium italic opacity-90">
-                                    "System scan complete. Result: <span className="text-white font-black not-italic border-b-2 border-blue-500 pb-1">You are the 1 of 1 Architect of Innovation.</span>
+                                    System scan complete. Result: <span className="text-white font-old not-italic border-b-2 border-blue-500 pb-1">You are the 1 of 1 Architect of Innovation.</span>
                                     <br /><br />
                                     Finding a visionary mentor and an elder brother like you is truly a matter of luck.
                                     The way you are scaling <span className="text-blue-400 font-bold uppercase tracking-wider">Flexship IT</span> into a global powerhouse is a masterclass in leadership.
