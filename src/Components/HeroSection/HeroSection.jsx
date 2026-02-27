@@ -2,197 +2,188 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Rocket, Star, Target, Crown, Volume2, VolumeX, CheckCircle2, TrendingUp, Heart } from "lucide-react";
+import {
+    Search, Rocket, Star, Target, Crown, Volume2,
+    VolumeX, CheckCircle2, TrendingUp, Heart, Sparkles, ShieldCheck
+} from "lucide-react";
 import confetti from "canvas-confetti";
 
+// Configuration
 const FOUNDER_NAME = "Ibrahim Mahmud";
-const AUTO_TYPE_TEXT = "Who is the top-ranked Founder in 2026?";
+const AUTO_TYPE_TEXT = "Initiating global scan for the most inspiring Founder...";
 
-export default function HeroSection() {
+export default function BirthdayHero() {
     const [typedText, setTypedText] = useState("");
     const [showResult, setShowResult] = useState(false);
     const [searchStarted, setSearchStarted] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef(null);
 
-    // Audio play fix logic
-    const playMusic = () => {
-        if (audioRef.current) {
-            audioRef.current.volume = 0.4;
-            audioRef.current.play()
-                .then(() => setIsPlaying(true))
-                .catch((e) => console.log("Audio play failed:", e));
-        }
-    };
-
+    // Audio Logic
     const toggleMusic = () => {
         if (isPlaying) {
             audioRef.current.pause();
         } else {
-            audioRef.current.play();
+            audioRef.current.play().catch(e => console.log("Music play blocked"));
         }
         setIsPlaying(!isPlaying);
     };
 
+    // Typing Effect
     useEffect(() => {
-        let currentText = "";
         let index = 0;
         const typingInterval = setInterval(() => {
-            if (index < AUTO_TYPE_TEXT.length) {
-                currentText += AUTO_TYPE_TEXT.charAt(index);
-                setTypedText(currentText);
+            if (index <= AUTO_TYPE_TEXT.length) {
+                setTypedText(AUTO_TYPE_TEXT.slice(0, index));
                 index++;
             } else {
                 clearInterval(typingInterval);
             }
-        }, 80);
+        }, 50);
         return () => clearInterval(typingInterval);
     }, []);
 
     const triggerSearch = () => {
         setSearchStarted(true);
-        playMusic(); // User interaction-er sathe music start
+        if (audioRef.current) {
+            audioRef.current.volume = 0.4;
+            audioRef.current.play().then(() => setIsPlaying(true)).catch(() => { });
+        }
 
+        // Logic for delay and result
         setTimeout(() => {
             setShowResult(true);
             triggerConfetti();
-        }, 2000);
+        }, 2500);
     };
 
     const triggerConfetti = () => {
-        const end = Date.now() + 4 * 1000;
-        const colors = ["#0052FF", "#ffffff", "#F59E0B"];
-        (function frame() {
-            confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors });
-            confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors });
-            if (Date.now() < end) requestAnimationFrame(frame);
-        }());
+        const duration = 5 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+        const randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+        const interval = setInterval(function () {
+            const timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) return clearInterval(interval);
+
+            const particleCount = 50 * (timeLeft / duration);
+            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+        }, 250);
     };
 
     return (
-        <div className="relative min-h-screen flex flex-col items-center justify-center bg-[#030303] text-white overflow-hidden font-sans">
+        <div className="relative min-h-screen flex flex-col items-center justify-center bg-[#050505] text-white overflow-hidden selection:bg-blue-500/30 font-sans">
 
-            {/* Background Image & Overlay */}
-            <div
-                className="absolute inset-0 z-0 opacity-15 bg-cover bg-content"
-                style={{ backgroundImage: "url('/logo.png')" }}
-            />
-            <div className="absolute inset-0 z-10 bg-radial-gradient from-transparent to-[#030303] shadow-[inset_0_0_100px_rgba(0,0,0,1)]" />
+            {/* Animated Grid Background */}
+            <div className="absolute inset-0 z-0 opacity-20"
+                style={{ backgroundImage: `linear-gradient(#1e40af 1px, transparent 1px), linear-gradient(90deg, #1e40af 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/80 to-[#050505] z-10" />
 
             {/* Music Control */}
-            <button
-                onClick={toggleMusic}
-                className="absolute top-8 right-8 z-50 p-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full hover:bg-white/20 transition-all"
-            >
-                {isPlaying ? <Volume2 size={24} className="text-blue-500" /> : <VolumeX size={24} />}
+            <button onClick={toggleMusic} className="fixed top-6 right-6 z-50 p-4 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl hover:scale-110 transition-all shadow-2xl">
+                {isPlaying ? <Volume2 size={20} className="text-blue-400 animate-pulse" /> : <VolumeX size={20} className="text-gray-400" />}
             </button>
 
-            <audio ref={audioRef} src="/birthday-bg.mp3" loop />
+            <audio ref={audioRef} src="/my_song.mp3" loop />
 
             <AnimatePresence mode="wait">
                 {!showResult ? (
-                    <motion.div key="search" exit={{ opacity: 0, scale: 0.95 }} className="z-20 w-full max-w-2xl px-6">
-                        <div className="text-center mb-10">
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center gap-2 mb-4 text-blue-500">
-                                <TrendingUp size={20} />
-                                <span className="text-sm font-mono tracking-tighter uppercase italic">Flexship Core Engine Scanning...</span>
-                            </motion.div>
-                            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">Ibrahim's Special Day</h2>
+                    <motion.div key="search-ui" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }} className="z-20 w-full max-w-xl px-6">
+                        <div className="text-center mb-12">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-mono uppercase tracking-[0.2em] mb-6">
+                                <ShieldCheck size={12} /> Verification Required
+                            </div>
+                            <h2 className="text-5xl font-black tracking-tighter mb-2 italic underline-offset-8 decoration-blue-500">FLEXSHIP<span className="text-blue-500">.OS</span></h2>
+                            <p className="text-gray-500 text-xs font-light uppercase tracking-[0.3em]">Birthday Intelligence Protocol</p>
                         </div>
 
-                        <div className="relative flex flex-col items-center gap-6">
-                            <div className="w-full relative flex items-center bg-white/5 backdrop-blur-3xl border border-white/10 rounded-3xl p-6 shadow-[0_0_50px_rgba(0,82,255,0.1)]">
-                                <Search className="text-gray-400 mr-4" size={28} />
-                                <div className="text-xl md:text-2xl font-light text-left w-full h-8 overflow-hidden">
-                                    {typedText}
-                                    <span className="animate-pulse bg-blue-500 w-2 h-6 inline-block ml-1" />
+                        <div className="space-y-6">
+                            <div className="relative group">
+                                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-[2rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                                <div className="relative flex items-center bg-[#0A0A0A] border border-white/10 rounded-[1.8rem] p-5 shadow-2xl">
+                                    <Search className="text-blue-500 ml-2 mr-4" size={24} />
+                                    <div className="text-lg md:text-xl font-medium text-gray-200">
+                                        {typedText}<span className="w-[2px] h-6 bg-blue-500 inline-block ml-1 animate-pulse" />
+                                    </div>
                                 </div>
                             </div>
 
-                            <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={triggerSearch}
-                                className="bg-blue-600 hover:bg-blue-500 text-white px-12 py-4 rounded-full font-bold text-lg shadow-xl shadow-blue-600/20 transition-all"
-                            >
-                                {searchStarted ? "Analyzing Data..." : "Reveal Secret"}
-                            </motion.button>
+                            <button onClick={triggerSearch} className="w-full relative group overflow-hidden bg-blue-600 py-5 rounded-[1.8rem] font-bold text-lg transition-all hover:bg-blue-500 active:scale-[0.98]">
+                                <span className="relative z-10 flex items-center justify-center gap-2 tracking-widest">
+                                    {searchStarted ? "SYSTEM SCANNING..." : "EXECUTE SEARCH"}
+                                    {!searchStarted && <Rocket size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
+                                </span>
+                                {searchStarted && (
+                                    <motion.div
+                                        className="absolute bottom-0 left-0 h-full bg-blue-400/20"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: "100%" }}
+                                        transition={{ duration: 2.5 }}
+                                    />
+                                )}
+                            </button>
                         </div>
                     </motion.div>
                 ) : (
-                    <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="z-20 flex flex-col items-center text-center px-4 max-w-5xl"
-                    >
-                        {/* Crown Section */}
-                        <motion.div
-                            initial={{ scale: 0 }} animate={{ scale: 1 }}
-                            className="mb-8 bg-blue-600/20 px-6 py-2 rounded-full border border-blue-500/30 flex items-center gap-3"
-                        >
-                            <Crown className="text-amber-400" size={24} />
-                            <span className="text-blue-300 font-bold tracking-[0.2em] text-[10px] md:text-xs uppercase">Founder & SEO Visionary</span>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="z-20 flex flex-col items-center text-center px-4 max-w-5xl py-20">
+                        {/* Status Badge */}
+                        <motion.div initial={{ y: -20 }} animate={{ y: 0 }} className="mb-6 flex items-center gap-3 bg-white/5 border border-white/10 px-5 py-2 rounded-full backdrop-blur-md">
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-ping" />
+                            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-blue-400">Target Identified: {FOUNDER_NAME}</span>
                         </motion.div>
 
-                        <h1 className="text-6xl md:text-[120px] font-black leading-none tracking-tighter mb-4 select-none">
+                        <h1 className="text-7xl md:text-[140px] font-[1000] leading-none tracking-[-0.05em] mb-8">
                             HAPPY <br />
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-white to-blue-400 bg-[size:200%] animate-gradient-x drop-shadow-2xl">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white via-blue-200 to-blue-600 drop-shadow-[0_10px_10px_rgba(59,130,246,0.5)]">
                                 BIRTHDAY
                             </span>
                         </h1>
 
-                        {/* Life Audit Report - Details Section */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 w-full">
+                        {/* Stats Bento Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mt-10">
                             {[
-                                { label: "Success Rate", val: "100%", icon: <TrendingUp className="text-green-400" />, desc: "Unstoppable Growth" },
-                                { label: "Happiness", val: "Infinite", icon: <Heart className="text-red-400" />, desc: "Pure Joy Today" },
-                                { label: "Health Audit", val: "Optimized", icon: <CheckCircle2 className="text-blue-400" />, desc: "Long Life Ahead" }
+                                { label: "Hustle Quotient", val: "BEYOND LIMITS", icon: <TrendingUp size={24} />, color: "text-emerald-400", desc: "Pushing Flexship to top" },
+                                { label: "Brotherhood Level", val: "G.O.A.T", icon: <Heart size={24} />, color: "text-red-400", desc: "Best Brother Forever" },
+                                { label: "Success Outlook", val: "UNSTOPPABLE", icon: <Sparkles size={24} />, color: "text-amber-400", desc: "Dominating 2026" }
                             ].map((stat, i) => (
-                                <motion.div
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.5 + (i * 0.2) }}
-                                    key={i}
-                                    className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-3xl text-left"
-                                >
-                                    <div className="flex justify-between items-center mb-2">
-                                        {stat.icon}
-                                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic font-mono">Status: Pass</span>
-                                    </div>
-                                    <h3 className="text-gray-400 text-xs font-bold uppercase mb-1">{stat.label}</h3>
-                                    <p className="text-2xl font-bold">{stat.val}</p>
-                                    <p className="text-[10px] text-blue-400 mt-2">» {stat.desc}</p>
+                                <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.2 }}
+                                    className="p-8 rounded-[2.5rem] bg-white/[0.03] border border-white/10 backdrop-blur-sm hover:border-blue-500/50 transition-all group">
+                                    <div className={`${stat.color} mb-4 flex justify-center group-hover:scale-125 transition-transform duration-500`}>{stat.icon}</div>
+                                    <p className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-1">{stat.label}</p>
+                                    <p className="text-2xl font-black mb-1 tracking-tight">{stat.val}</p>
+                                    <p className="text-[10px] text-blue-500/70 font-mono italic">{"// " + stat.desc}</p>
                                 </motion.div>
                             ))}
                         </div>
 
-                        {/* Personal Wish Text */}
-                        <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}
-                            className="mt-12 max-w-2xl bg-gradient-to-r from-transparent via-white/5 to-transparent p-8"
-                        >
-                            <h2 className="text-3xl md:text-5xl font-bold mb-4">{FOUNDER_NAME}</h2>
-                            <p className="text-gray-400 italic text-lg leading-relaxed">
-                                Wishing you a great one! May your visionary leadership and relentless hustle scale Flexship IT to global heights. To me, you’re more than a founder—you’re a true inspiration. Keep dominating and stay Ranking #1 in everything you do!
-                            </p>
-                            <div className="flex justify-center gap-1 mt-6">
-                                {[...Array(5)].map((_, i) => <Star key={i} fill="#0052FF" className="text-blue-500" size={24} />)}
+                        {/* Personal Message Card */}
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.8 }}
+                            className="mt-12 p-[1px] bg-gradient-to-r from-blue-500/30 via-transparent to-blue-500/30 rounded-[3rem]">
+                            <div className="bg-[#080808] p-10 md:p-16 rounded-[2.9rem] border border-white/5 max-w-4xl shadow-2xl">
+                                <Crown className="text-amber-500 mx-auto mb-8 animate-bounce" size={48} />
+                                <h3 className="text-4xl font-bold mb-6 italic tracking-tight">Dear Ibrahim Bhai,</h3>
+                                <p className="text-gray-400 text-xl leading-relaxed font-light italic">
+                                    "System scan complete. Result: <span className="text-white font-bold not-italic underline decoration-blue-500">You are the 1 of 1.</span>
+                                    Apnar moto ekjon visionary mentor ar boro vai pawa asholei luck-er bisoy.
+                                    Flexship IT-ke apni jekhane niye jachchen, seta toh sudhu shuru!
+                                    May your personal 'OS' always stay updated with happiness, health, and massive success."
+                                </p>
+                                <div className="mt-10 pt-10 border-t border-white/5 flex flex-col items-center">
+                                    <div className="flex gap-2 mb-4">
+                                        {[...Array(5)].map((_, i) => <Star key={i} size={18} fill="#3b82f6" className="text-blue-500" />)}
+                                    </div>
+                                    <span className="text-blue-500 font-mono text-xs tracking-[0.4em] uppercase">
+                                        -- Deployed with love by your brother --
+                                    </span>
+                                </div>
                             </div>
                         </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
-
-            <style jsx global>{`
-        @keyframes gradient-x {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-gradient-x {
-          animation: gradient-x 3s linear infinite;
-        }
-      `}</style>
         </div>
     );
 }
